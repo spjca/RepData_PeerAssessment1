@@ -20,17 +20,20 @@ library(Hmisc)#to extract and impute values over NA values
 ```
 
 Load data from csv file
+
 ```{r}
 temp <- unzip("repdata-data-activity.zip")
 activity.data <- read.csv(temp, stringsAsFactors = FALSE)
 ```
 
 Check data
+
 ```{r, echo=TRUE}
 str(activity.data)
 ```
 
 Date does not have the correct class. Changing class from 'chr' to 'date'
+
 ```{r}
 activity.data$date <- as.Date(activity.data$date)
 ```
@@ -43,11 +46,13 @@ activity.data$date <- as.Date(activity.data$date)
 **For this part of the assignment, you can ignore the missing values in the dataset**
 
 Creating a dataset with NA values removed
+
 ```{r, echo=TRUE}
 activity.narm <- activity.data[which(!is.na(activity.data$steps)),]
 ```
 
 - **Calculate the total number of steps taken per day**
+
 ```{r, echo=TRUE}
 activity.narm.byday <- tapply(activity.narm$steps, 
                               activity.narm$date, 
@@ -56,6 +61,7 @@ activity.narm.byday
 ```
 
 - **Make a histogram of the total number of steps taken each day**
+
 ```{r, echo=TRUE}
 hist(activity.narm.byday, 30, 
      main = "NA removed Total Steps/Day", 
@@ -64,6 +70,7 @@ hist(activity.narm.byday, 30,
 
 
 - **Calculate and report the mean and median of the total number of steps taken per day**
+
 ```{r, echo=TRUE}
 activity.narm.byday.mean <- tapply(activity.narm$steps, 
                                    activity.narm$date, 
@@ -81,7 +88,8 @@ activity.narm.byday.median
 #What is the average daily activity pattern?#
 
 - **Make a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all days (y-axis)**
-```{r, echo=TRUE}
+
+```{r, echo=FALSE}
 activity.narm.daily<-tapply(activity.narm$steps, 
                             activity.narm$interval, 
                             mean)
@@ -94,6 +102,7 @@ plot(y = activity.narm.daily,
 ```
 
 - **Which 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps?**
+
 ```{r, echo=TRUE}
 activity.narm.daily[activity.narm.daily==max(activity.narm.daily)]
 ```
@@ -106,6 +115,7 @@ activity.narm.daily[activity.narm.daily==max(activity.narm.daily)]
 Note that there are a number of days/intervals where there are missing values (coded as NA). The presence of missing days may introduce bias into some calculations or summaries of the data.
 
 - **Calculate and report the total number of missing values in the dataset (i.e. the total number of rows with NAs)**
+
 ```{r, echo=TRUE}
 sum(is.na(activity.data$steps))
 ```
@@ -113,6 +123,7 @@ sum(is.na(activity.data$steps))
 - **Devise a strategy for filling in all of the missing values in the dataset. The strategy does not need to be sophisticated. For example, you could use the mean/median for that day, or the mean for that 5-minute interval, etc.**
 
 Using Hmisc to view breakdown of NA values by interval
+
 ```{r, echo=TRUE}
 activity.steps.Breakdown <- bystats(activity.data$steps, 
                                     activity.data$interval,
@@ -122,6 +133,7 @@ activity.steps.Breakdown
 ```
 
 Appears all instances have 8 NA values and the majority of instances have a median of 0. Instead of removing the NA values, I will impute the mean value of the non NA step instances into the NA values by creating a function
+
 ```{r, echo=TRUE}
 impute.Mean <- function(impute.var, filter.var, var.levels){
   #for each v variable in list of inputs var.levels
@@ -137,6 +149,7 @@ impute.Mean <- function(impute.var, filter.var, var.levels){
 
 - **Create a new dataset that is equal to the original dataset but with the missing data filled in.**
 Impute missing steps with means using above function for activity data to new dataset
+
 ```{r, echo=TRUE}
 activity.clean <- activity.data
 activity.clean$steps <- impute.Mean(activity.clean$steps,            #steps
@@ -145,6 +158,7 @@ activity.clean$steps <- impute.Mean(activity.clean$steps,            #steps
 ```
 
 Check steps for NA values
+
 ```{r, echo=TRUE}
 sum(is.na(activity.clean$steps))
 ```
@@ -152,6 +166,7 @@ sum(is.na(activity.clean$steps))
 - **Make a histogram of the total number of steps taken each day and Calculate and report the mean and median total number of steps taken per day. Do these values differ from the estimates from the first part of the assignment? What is the impact of imputing missing data on the estimates of the total daily number of steps?**
 
 Now that the NA values have been imputed, create a variable of the divided up daily data using tapply and create a histogram of data
+
 ```{r, echo=TRUE}
 activity.clean.byday <- tapply(activity.clean$steps, 
                                activity.clean$date, 
@@ -170,6 +185,7 @@ median(activity.clean.byday)
 **For this part the weekdays() function may be of some help here. Use the dataset with the filled-in missing values for this part.**
 
 - **Create a new factor variable in the dataset with two levels - "weekday" and "weekend" indicating whether a given date is a weekday or weekend day.**
+
 ```{r, echo=TRUE}
 #create variable for day of week using weekdays function on date index
 activity.clean$day<-weekdays(activity.clean$date)
@@ -196,7 +212,9 @@ activity.weekend.daily <- tapply(activity.data.weekend$steps,
 activity.weekday.daily <- tapply(activity.data.weekday$steps, 
                                  activity.data.weekday$interval, 
                                  mean)
+```
 
+```{r, echo=FALSE}
 #plot the datasets
 plot(y = activity.weekend.daily, x = names(activity.weekend.daily), 
      type = "l", xlab = "5-Minute Interval", 
