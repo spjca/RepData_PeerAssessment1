@@ -214,7 +214,7 @@ activity.weekday.daily <- tapply(activity.data.weekday$steps,
                                  mean)
 ```
 
-```{r, echo=FALSE}
+```{r}
 #plot the datasets
 plot(y = activity.weekend.daily, x = names(activity.weekend.daily), 
      type = "l", xlab = "5-Minute Interval", 
