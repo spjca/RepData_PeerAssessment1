@@ -22,7 +22,7 @@ library(Hmisc)#to extract and impute values over NA values
 Load data from csv file
 
 ```{r}
-temp <- unzip("repdata-data-activity.zip")
+temp <- unzip("activity.zip")
 activity.data <- read.csv(temp, stringsAsFactors = FALSE)
 ```
 
@@ -214,11 +214,11 @@ activity.weekday.daily <- tapply(activity.data.weekday$steps,
                                  mean)
 ```
 
-```{r}
+```{r, eval=TRUE}
 #plot the datasets
 plot(y = activity.weekend.daily, x = names(activity.weekend.daily), 
      type = "l", xlab = "5-Minute Interval", 
-     main = "Daily Activity Pattern on Weekdays", 
+     main = "Daily Activity Pattern on Weekends", 
      ylab = "Average number of steps", 
      ylim =c(0, 250))
 plot(y = activity.weekday.daily, x = names(activity.weekday.daily), 
